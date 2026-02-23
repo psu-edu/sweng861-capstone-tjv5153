@@ -1,7 +1,7 @@
 from datetime import datetime
 from urllib import request
 from dotenv import load_dotenv
-from fastapi import FastAPI, Request, status, Depends
+from fastapi import FastAPI, Request, status, Depends, File, UploadFile
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import FileResponse, RedirectResponse, HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,12 +10,14 @@ import jwt
 from okta_jwt.jwt import validate_token
 from okta_jwt_verifier import BaseJWTVerifier
 import os
+import shutil
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 import sqlite3
 import ticketsDb_utils
 import userDb_utils
+import LicensePlateRecognitionAPI
 
 load_dotenv()
 OKTA_URL = os.getenv("OKTA_URL")
@@ -51,7 +53,8 @@ token_url = metadata["token_endpoint"]
 
 @app.middleware("http")
 async def authentication_middleware(request: Request, call_next):
-    if request.url.path != "/api/hello" and request.url.path != "/cars":
+    if request.url.path != "/revokeParkingPass" and request.url.path != "/addTicket" and request.url.path != "/removeTicket" \
+    and request.url.path != "/checkTickets" and request.url.path != "/parkingPass":
         response = await call_next(request)
         print("No authentication required for this path")
         return response
@@ -255,6 +258,36 @@ async def remove_ticket(request: Request, ticketId: int, verified: bool = Depend
             return JSONResponse(status_code=200, content={"message": "Ticket removed successfully"})
         else:
             return JSONResponse(status_code=500, content={"error": "Failed to remove ticket"})
+
+@app.put("/revokeParkingPass")
+@limiter.limit("50/minute")
+async def revoke_parking_pass(request: Request, licensePlate: str, verified: bool = Depends(isAuthenticated_officer)):
+    if not verified:
+        return JSONResponse(status_code=401, content={"error": "Unauthorized"})
+    else:
+        status = userDb_utils.removeParkingPassFromUser(licensePlate)
+        if status:
+            return JSONResponse(status_code=200, content={"message": "Parking pass revoked successfully"})
+        else:
+            return JSONResponse(status_code=500, content={"error": "Failed to revoke parking pass"})
+
+@app.post("/checkLicensePlate")
+async def check_license_plate(file: UploadFile = File(...)):
+    # Save the file locally
+    file_path = f"uploaded_{file.filename}"
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    image = "demo.jpg" # use demo image for testing
+
+    license_plate = LicensePlateRecognitionAPI.getLicensePlateFromImage(image)
+    has_parking_pass = userDb_utils.checkIfUserHasParkingPass(license_plate)
+
+    if has_parking_pass:
+        return JSONResponse(status_code=200, content={"message": f"License plate {license_plate} has a valid parking pass"})
+    else:
+        return JSONResponse(status_code=403, content={"message": f"License plate {license_plate} does not have a valid parking pass"})
+
 
 userDb_utils.setupUsersDb()
 ticketsDb_utils.setupTicketsDb()

@@ -1,7 +1,14 @@
+from datetime import datetime
 from dotenv import load_dotenv
 import json
+import logging
 import os
 import sqlite3
+
+#configure logging
+date_string = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 USERS_DB_PATH = os.getenv("USERS_DB")
@@ -89,6 +96,22 @@ def removeParkingPassFromUser(licensePlate : str):
         print(f"Failed to remove parking pass: {e}")
         return False
 
+def checkIfUserHasParkingPass(licensePlate : str):
+    try:
+        conn = sqlite3.connect(USERS_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("SELECT parkingPass FROM users WHERE licensePlate = ?", (licensePlate,))
+        result = cursor.fetchone()
+        conn.close()
+        if result:
+            return result[0] == 1
+        else:
+            logger.warning(f"No user found with license plate: {licensePlate}")
+            return False
+    except sqlite3.Error as e:
+        print(f"Failed to check parking pass: {e}")
+        return False
+    
 #Used for testing purposes to print all users in the database
 def print_all_users_database():
     try:
