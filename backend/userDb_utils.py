@@ -13,12 +13,13 @@ else:
 
 
 class User():
-    def __init__(self, id, username, email, accessTime, role = 'commuter'):
+    def __init__(self, id, username, email, accessTime, role = 'commuter', parkingPass = False):
         self.id = id
         self.username = username
         self.email = email
         self.lastAccessTime = accessTime
         self.role = role
+        self.parkingPass = parkingPass
 
         if self.username in OFFICERS_LIST:
             self.role = 'officer'
@@ -26,8 +27,8 @@ class User():
         conn = sqlite3.connect(USERS_DB_PATH)
         cursor = conn.cursor()
         #If user does not exist insert new record else ignore
-        cursor.execute("INSERT OR IGNORE INTO users (id, username, email, lastAccessTime, createdTime, role) VALUES (?, ?, ?, ?, ?, ?)", 
-                       (self.id, self.username, self.email, self.lastAccessTime, self.lastAccessTime, self.role))
+        cursor.execute("INSERT OR IGNORE INTO users (id, username, email, lastAccessTime, createdTime, role, parkingPass) VALUES (?, ?, ?, ?, ?, ?, ?)", 
+                       (self.id, self.username, self.email, self.lastAccessTime, self.lastAccessTime, self.role, self.parkingPass))
         conn.commit()
 
         cursor = conn.cursor()
@@ -49,7 +50,8 @@ def setupUsersDb():
             licensePlate TEXT,
             lastAccessTime INTEGER,
             createdTime INTEGER,
-            role TEXT
+            role TEXT,
+            parkingPass BOOLEAN
         )''')
         conn.commit()
         conn.close()
@@ -62,7 +64,31 @@ def addUsertoDB(userinfo):
         return True
     else:        
         return False
+
+def addParkingPassToUser(licensePlate):
+    try:
+        conn = sqlite3.connect(USERS_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("UPDATE users SET parkingPass = ? WHERE licensePlate = ?", (True, licensePlate))
+        conn.commit()
+        conn.close()
+        return True
+    except sqlite3.Error as e:
+        print(f"Failed to add parking pass: {e}")
+        return False
     
+def removeParkingPassFromUser(licensePlate : str):
+    try:
+        conn = sqlite3.connect(USERS_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("UPDATE users SET parkingPass = ? WHERE licensePlate = ?", (False, licensePlate))
+        conn.commit()
+        conn.close()
+        return True
+    except sqlite3.Error as e:
+        print(f"Failed to remove parking pass: {e}")
+        return False
+
 #Used for testing purposes to print all users in the database
 def print_all_users_database():
     try:

@@ -215,9 +215,22 @@ async def authCallback(response: HTMLResponse, code:str, state:str):
 
 #Protected endpoints, authentication required
 @app.get("/checkTickets")
+@limiter.limit("50/minute")
 async def check_tickets(request: Request, licensePlate: str, verified: bool = Depends(isAuthenticated)):
     tickets = ticketsDb_utils.checkIfLicensePlateHasTicket(licensePlate)
     return JSONResponse(content={"tickets": tickets})
+
+@app.get("/parkingPass")
+@limiter.limit("50/minute")
+async def get_parking_pass(request: Request, licensePlate: str, verified: bool = Depends(isAuthenticated)):
+    if not verified:
+        return JSONResponse(status_code=401, content={"error": "Unauthorized"})
+    else:
+        status = userDb_utils.addParkingPassToUser(licensePlate)
+        if status:
+            return JSONResponse(status_code=200, content={"message": "Parking pass added successfully"})
+        else:
+            return JSONResponse(status_code=500, content={"error": "Failed to add parking pass"})
 
 @app.post("/addTicket", response_model=ticketsDb_utils.Ticket)
 @limiter.limit("50/minute")
@@ -231,7 +244,17 @@ async def add_ticket(request: Request, ticket:ticketsDb_utils.Ticket, verified: 
         else:
             return JSONResponse(status_code=500, content={"error": "Failed to add ticket"})
 
-
+@app.delete("/removeTicket")
+@limiter.limit("50/minute")
+async def remove_ticket(request: Request, ticketId: int, verified: bool = Depends(isAuthenticated_officer)):
+    if not verified:
+        return JSONResponse(status_code=401, content={"error": "Unauthorized"})
+    else:
+        status = ticketsDb_utils.removeTicket(ticketId)
+        if status:
+            return JSONResponse(status_code=200, content={"message": "Ticket removed successfully"})
+        else:
+            return JSONResponse(status_code=500, content={"error": "Failed to remove ticket"})
 
 userDb_utils.setupUsersDb()
 ticketsDb_utils.setupTicketsDb()
