@@ -78,6 +78,7 @@ def print_all_tickets_database():
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM Tickets')
         rows = cursor.fetchall()
+        conn.close()
         for row in rows:
             print(f"Ticket Number: {row[0]}, License Plate: {row[1]}, Issue Date: {row[2]}, Violation: {row[3]}, Fine Amount: {row[4]}, Officer Name: {row[5]}")
     except sqlite3.Error as e:

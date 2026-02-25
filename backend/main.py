@@ -232,18 +232,24 @@ async def authCallback(response: HTMLResponse, code:str, state:str):
     return response
 
 #Protected endpoints, authentication required
-@app.get("/checkTickets")
+@app.get("/checkTickets/{licensePlate}")
 @limiter.limit("50/minute")
 async def check_tickets(request: Request, licensePlate: str, verified: bool = Depends(isAuthenticated)):
     tickets = ticketsDb_utils.checkIfLicensePlateHasTicket(licensePlate)
-    return JSONResponse(content={"tickets": tickets})
+    if tickets:
+        logger.info(f"License plate {licensePlate} has {len(tickets)} ticket(s)")
+        return JSONResponse(status_code=200, content={"tickets": tickets})
+    else:
+        logger.info(f"License plate {licensePlate} has no tickets")
+        return JSONResponse(status_code=200, content={"message": f"License plate {licensePlate} has no tickets"})
 
-@app.get("/parkingPass")
+@app.post("/parkingPass/{licensePlate}")
 @limiter.limit("50/minute")
-async def get_parking_pass(request: Request, licensePlate: str, name: str, verified: bool = Depends(isAuthenticated)):
+async def get_parking_pass(request: Request, licensePlate: str, verified: bool = Depends(isAuthenticated)):
     if not verified:
         return JSONResponse(status_code=401, content={"error": "Unauthorized"})
     else:
+        name = extractUserInfo(request.cookies.get("session_id"))['name']
         status = userDb_utils.addParkingPassToUser(licensePlate, name)
         if status:
             return JSONResponse(status_code=200, content={"message": "Parking pass added successfully"})
@@ -262,7 +268,7 @@ async def add_ticket(request: Request, ticket:ticketsDb_utils.Ticket, verified: 
         else:
             return JSONResponse(status_code=500, content={"error": "Failed to add ticket"})
 
-@app.delete("/removeTicket")
+@app.delete("/removeTicket/{ticketId}")
 @limiter.limit("50/minute")
 async def remove_ticket(request: Request, ticketId: int, verified: bool = Depends(isAuthenticated_officer)):
     if not verified:
@@ -274,7 +280,7 @@ async def remove_ticket(request: Request, ticketId: int, verified: bool = Depend
         else:
             return JSONResponse(status_code=500, content={"error": "Failed to remove ticket"})
 
-@app.put("/revokeParkingPass")
+@app.put("/revokeParkingPass/{licensePlate}")
 @limiter.limit("50/minute")
 async def revoke_parking_pass(request: Request, licensePlate: str, verified: bool = Depends(isAuthenticated_officer)):
     if not verified:
@@ -289,7 +295,7 @@ async def revoke_parking_pass(request: Request, licensePlate: str, verified: boo
 @app.post("/checkLicensePlate")
 async def check_license_plate(file: UploadFile = File(...)):
     # Save the file locally
-    file_path = f"uploaded_{file.filename}"
+    file_path = f"uploaded/{file.filename}"
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
@@ -299,6 +305,7 @@ async def check_license_plate(file: UploadFile = File(...)):
     has_parking_pass = userDb_utils.checkIfUserHasParkingPass(license_plate)
 
     if has_parking_pass:
+        logger.info(f"License plate {license_plate} has a valid parking pass. Garage Access Granted.")
         return JSONResponse(status_code=200, content={"message": f"License plate {license_plate} has a valid parking pass"})
     else:
         logger.info(f"License plate {license_plate} does not have a valid parking pass")

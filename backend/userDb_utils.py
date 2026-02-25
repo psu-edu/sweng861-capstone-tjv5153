@@ -119,6 +119,7 @@ def print_all_users_database():
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM users')
         rows = cursor.fetchall()
+        conn.close()
         for row in rows:
             print(f"ID: {row[0]}, Username: {row[1]}, Email: {row[2]}, Last Access Time: {row[3]}, Created Time: {row[4]}, Role: {row[5]}")
     except sqlite3.Error as e:
