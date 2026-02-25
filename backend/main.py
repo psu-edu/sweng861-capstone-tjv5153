@@ -18,6 +18,14 @@ import sqlite3
 import ticketsDb_utils
 import userDb_utils
 import LicensePlateRecognitionAPI
+import logging
+
+#configure logging
+date_string = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+logging.basicConfig(filename=f"backend_{date_string}.log", level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+logger.info("Starting backend application")
 
 load_dotenv()
 OKTA_URL = os.getenv("OKTA_URL")
@@ -50,6 +58,13 @@ templates = Jinja2Templates(directory="../frontend/templates")
 metadata = httpx.get(f"{OKTA_URL}/.well-known/openid-configuration").json()
 authorization_url = metadata["authorization_endpoint"]
 token_url = metadata["token_endpoint"]
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    logger.info(f"Incoming Request: {request.method} {request.url.path} {request.client.host}")
+    response = await call_next(request)
+    logger.info(f"Response: {response.status_code}")
+    return response
 
 @app.middleware("http")
 async def authentication_middleware(request: Request, call_next):
@@ -278,14 +293,15 @@ async def check_license_plate(file: UploadFile = File(...)):
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    image = "demo.jpg" # use demo image for testing
-
+    #image = "demo.jpg" # use demo image for testing
+    image = file_path
     license_plate = LicensePlateRecognitionAPI.getLicensePlateFromImage(image)
     has_parking_pass = userDb_utils.checkIfUserHasParkingPass(license_plate)
 
     if has_parking_pass:
         return JSONResponse(status_code=200, content={"message": f"License plate {license_plate} has a valid parking pass"})
     else:
+        logger.info(f"License plate {license_plate} does not have a valid parking pass")
         return JSONResponse(status_code=403, content={"message": f"License plate {license_plate} does not have a valid parking pass"})
 
 

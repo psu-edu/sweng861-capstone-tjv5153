@@ -13,7 +13,7 @@ load_dotenv()
 
 API_TOKEN = os.getenv("API_TOKEN")
 
-image = "demo.jpg"
+demo_image = "testLicensePlates/demo.jpg"
 
 def getLicensePlateFromImage(image):
     regions = ["mx", "us-ca"]
@@ -39,4 +39,4 @@ def getLicensePlateFromImage(image):
         return None
 
 
-getLicensePlateFromImage(image)
+#getLicensePlateFromImage(demo_image)
