@@ -225,11 +225,11 @@ async def check_tickets(request: Request, licensePlate: str, verified: bool = De
 
 @app.get("/parkingPass")
 @limiter.limit("50/minute")
-async def get_parking_pass(request: Request, licensePlate: str, verified: bool = Depends(isAuthenticated)):
+async def get_parking_pass(request: Request, licensePlate: str, name: str, verified: bool = Depends(isAuthenticated)):
     if not verified:
         return JSONResponse(status_code=401, content={"error": "Unauthorized"})
     else:
-        status = userDb_utils.addParkingPassToUser(licensePlate)
+        status = userDb_utils.addParkingPassToUser(licensePlate, name)
         if status:
             return JSONResponse(status_code=200, content={"message": "Parking pass added successfully"})
         else:

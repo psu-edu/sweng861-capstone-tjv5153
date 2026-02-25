@@ -72,11 +72,11 @@ def addUsertoDB(userinfo):
     else:        
         return False
 
-def addParkingPassToUser(licensePlate):
+def addParkingPassToUser(licensePlate, name):
     try:
         conn = sqlite3.connect(USERS_DB_PATH)
         cursor = conn.cursor()
-        cursor.execute("UPDATE users SET parkingPass = ? WHERE licensePlate = ?", (True, licensePlate))
+        cursor.execute("UPDATE users SET parkingPass = ?, licensePlate = ? WHERE username = ?", (True, licensePlate, name))
         conn.commit()
         conn.close()
         return True
