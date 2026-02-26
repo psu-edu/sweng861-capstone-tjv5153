@@ -64,7 +64,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build Backend Docker Image
         run: |
-          cd backend
           docker build -t backend .
           docker save backend -o backend_docker_image.tar
       - name: Publish Backend Docker Image
