@@ -3,15 +3,15 @@ FROM python:3.13.9-slim
 WORKDIR /backend
 
 # copy the requirements.txt into container COPY <source> <destination>
-COPY ./backend/requirements.txt /backend/requirements.txt
+COPY ../backend/requirements.txt /backend/requirements.txt
 
 RUN pip install --no-cache-dir --upgrade -r /backend/requirements.txt
 
-COPY ./backend/ /backend/
+COPY ../backend/ /backend/
 
 WORKDIR /database
 
-COPY ./database/ .
+COPY ../database/ .
 
 WORKDIR /backend
 

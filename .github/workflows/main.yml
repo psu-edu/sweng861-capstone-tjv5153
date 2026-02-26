@@ -40,6 +40,7 @@ jobs:
           OFFICERS: ${{ secrets.OFFICERS }}
           API_TOKEN: ${{ secrets.API_TOKEN }}
         run: |
+          cd backend
           pytest tests/ --cov=. --cov-report html
       - name: Publish Coverage Report
         uses: actions/upload-artifact@v4
