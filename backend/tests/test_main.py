@@ -271,6 +271,10 @@ def test_check_tickets_no_tickets(mocker):
     assert response.status_code == 200
     assert response.json() == {"message": "License plate TEST123 has no tickets"}
 
+def test_state_check():
+    assert backend_main.verifyStatePostAuth("login") is True
+    assert backend_main.verifyStatePostAuth("invalid_state") is False
+
 def override_isAuthenticated_user_false():
     return False
 
