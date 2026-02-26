@@ -275,6 +275,77 @@ def test_state_check():
     assert backend_main.verifyStatePostAuth("login") is True
     assert backend_main.verifyStatePostAuth("invalid_state") is False
 
+def test_exchangeCodeForTokens_success(mocker):
+    mock_code = "mock_code"
+
+    mock_httpx_post = MagicMock(return_value=httpx.Response(200, json={"access_token": "mock_access_token", "id_token": "mock_id_token"}))
+    mocker.patch('main.httpx.post', mock_httpx_post)
+
+    result = backend_main.exchangeCodeForTokens(mock_code)
+
+    assert len(result) == 2
+    assert result[0] == "mock_access_token"
+    assert result[1] == "mock_id_token"
+
+def test_exchangeCodeForTokens_failure(mocker):
+    mock_code = "mock_code"
+
+    mock_httpx_post = MagicMock(return_value=httpx.Response(400, json={"error": "Invalid code"}))
+    mocker.patch('main.httpx.post', mock_httpx_post)
+
+    result = backend_main.exchangeCodeForTokens(mock_code)
+
+    assert len(result) == 2
+    assert result[0] == None
+    assert result[1] == None
+
+def test_FailToValidate_AuthCallback(mocker):
+    #signin
+    redirect_uri = f"{authorization_url}?client_id={OKTA_CLIENT_ID}&response_type=code&scope=openid&redirect_uri={BACKEND_URL}/authorization-code/callback&state=login"
+    signin_response = client.get("/signin")
+    assert signin_response.status_code == 200
+    assert signin_response.content is not None
+    assert signin_response.json() == {"redirect_uri": redirect_uri}
+
+    #authorization code callback with bad token
+    authCallback_response = client.get("/authorization-code/callback", params={"code": "test_code", "state": "login"})
+    assert authCallback_response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+    assert authCallback_response.json() == {"status": "error", "message": "Token validation failed"}
+
+@pytest.mark.asyncio
+async def test_isAuthenticated_validToken(mocker):
+    mock_request = MagicMock()
+    mock_request.cookies.get.return_value = "mock_token"
+
+    mock_validateTokens = AsyncMock(return_value=True)
+    mocker.patch('main.validateTokens', mock_validateTokens)
+
+    result = await backend_main.isAuthenticated(mock_request)
+    
+    assert result == True
+
+@pytest.mark.asyncio
+async def test_isAuthenticated_noToken(mocker, capsys):    
+    mock_request = MagicMock()
+    mock_request.cookies.get.return_value = None
+
+    result = await backend_main.isAuthenticated(mock_request)
+
+    captured = capsys.readouterr()
+
+    assert "No session ID found in cookies" in captured.out
+    assert result == False
+
+def test_health_check():
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
+
+def test_favicon():
+    response = client.get("/favicon.ico")
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "image/x-icon"
+    
 def override_isAuthenticated_user_false():
     return False
 
