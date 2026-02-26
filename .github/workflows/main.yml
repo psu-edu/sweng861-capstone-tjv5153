@@ -2,7 +2,7 @@ on:
   push:
     branches:
       - main
-      - feature/backend
+      - feature/frontend
   pull_request:
     branches:
       - main
