@@ -13,6 +13,7 @@ from unittest.mock import MagicMock
 from unittest.mock import AsyncMock
 
 from pytest_mock import mocker
+from unittest.mock import patch, AsyncMock
 
 
 sys.path.insert(0, "../backend")
@@ -220,36 +221,50 @@ def test_add_ticket_not_officer(mocker):
     assert response.json() == {"error": "Unauthorized"}
 
 def test_get_parking_pass(mocker):
+    get_pass = userDb_utils.PassSignup(name="testuser", licensePlate="TEST123")
+
     app.dependency_overrides[isAuthenticated] = override_isAuthenticated_user_true
+
+    mocker.patch('main.extractUserInfo', return_value={"name": "testuser", "email": "testuser@example.com"})
 
     mocker.patch('userDb_utils.addParkingPassToUser', return_value=True)
 
     mocker.patch('main.validateTokens', return_value=True)
 
     client.cookies.set("session_id", TEST_TOKEN)
-    response = client.post("/parkingPass/TEST123", json={"licensePlate" : "TEST123"})
+    response = client.post("/parkingPass/", content=get_pass.model_dump_json())
     assert response.status_code == 200
     assert response.json() == {"message": "Parking pass added successfully"}
 
-def test_get_parking_pass_fail(mocker):
+@pytest.mark.asyncio
+async def test_get_parking_pass_fail(mocker):
+    get_pass = userDb_utils.PassSignup(name="testuser", licensePlate="TEST123")
     app.dependency_overrides[isAuthenticated] = override_isAuthenticated_user_true
 
     mocker.patch('userDb_utils.addParkingPassToUser', return_value=False)
 
-    mocker.patch('main.validateTokens', return_value=True)
+    mock_validateTokens = AsyncMock(return_value=True)
+    mocker.patch('main.validateTokens', mock_validateTokens)
+
+    mock_auth_middleware = AsyncMock(return_value=True)
+    mocker.patch('main.authentication_middleware', mock_auth_middleware)
+
+    mocker.patch('main.extractUserInfo', return_value={"name": "testuser", "email": "testuser@example.com"})
 
     client.cookies.set("session_id", TEST_TOKEN)
-    response = client.post("/parkingPass/TEST123", json={"licensePlate" : "TEST123"})
+    response = client.post("/parkingPass/", content=get_pass.model_dump_json())
     assert response.status_code == 500
     assert response.json() == {"error": "Failed to add parking pass"}
 
 def test_get_parking_pass_not_authenticated(mocker):
+    client.cookies.clear()
+    get_pass = userDb_utils.PassSignup(name="testuser", licensePlate="TEST123")
+
     app.dependency_overrides[isAuthenticated] = override_isAuthenticated_user_false
 
-    client.cookies.set("session_id", TEST_TOKEN)
-    response = client.post("/parkingPass/TEST123", json={"licensePlate" : "TEST123"})
+    response = client.post("/parkingPass/", content=get_pass.model_dump_json())
     assert response.status_code == 401
-    assert response.json() == {"error": "Unauthorized"}
+    assert response.json() == {"Unauthorized": "Valid access token is required"}
 
 def test_check_tickets(mocker):
     app.dependency_overrides[isAuthenticated] = override_isAuthenticated_user_true
