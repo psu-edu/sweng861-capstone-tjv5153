@@ -12,8 +12,6 @@ async function handleLogin() {
         if (response.ok) 
         {
             const data = await response.json();
-
-            sessionStorage.setItem('authStatus', true);
             window.location.href = data.redirect_uri;
         }
     }

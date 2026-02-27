@@ -13,6 +13,8 @@ const MenuBar = () => {
         </div>
         <ul className="menu-links">
             <li><Link to="/">Home</Link></li>
+            <li><Link to="/dashboard">Commuter Dashboard</Link></li>
+            <li><Link to="/officerDashboard">Officer Dashboard</Link></li>
             <li><Link to="/login">Login</Link></li>
         </ul>
         <div className="nav-user-status">

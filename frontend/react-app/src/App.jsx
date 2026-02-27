@@ -4,7 +4,9 @@ import './MenuBar.css'
 import { Route, Routes } from 'react-router-dom';
 import Login from './Login';
 import { ApiClientGetUserInfo } from './ApiClient.jsx';
-
+import Dashboard from './Dashboard';
+import OfficerDashboard from './OfficerDashboard.jsx';
+import GetParkingPass from './GetParkingPass.jsx';
 
 
 function Greeting() {
@@ -30,6 +32,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Home/>}/>
         <Route path="/login" element={<Login/>}/>
+        <Route path="/dashboard" element={<Dashboard/>}/>
+        <Route path="/officerDashboard" element={<OfficerDashboard/>}/>
+        <Route path="/parkingPass" element={<GetParkingPass/>}/>
         <Route path="*" element={<h1>Error 404 Page Not Found</h1>}/>
       </Routes>
     </div>

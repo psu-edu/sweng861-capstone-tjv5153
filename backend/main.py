@@ -69,7 +69,7 @@ async def log_requests(request: Request, call_next):
 @app.middleware("http")
 async def authentication_middleware(request: Request, call_next):
     if request.url.path != "/revokeParkingPass" and request.url.path != "/addTicket" and request.url.path != "/removeTicket" \
-    and request.url.path != "/checkTickets" and request.url.path != "/parkingPass":
+    and request.url.path != "/checkTickets" and request.url.path != "/parkingPass/" and request.url.path != "/userinfo":
         response = await call_next(request)
         print("No authentication required for this path")
         return response
@@ -142,7 +142,7 @@ async def validateTokens(token: str, token_type: str):
         return False
     
 def extractUserInfo(token: str):
-    print(token)
+    #print(token)
     decoded_token = jwt.decode(token, options={"verify_signature": False})
     userinfo = {}
     userinfo['name'] = f'{decoded_token.get('name')} {decoded_token.get('lastName')}'
@@ -214,9 +214,15 @@ async def authCallback(response: HTMLResponse, code:str, state:str):
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"status": "error", "message": "State verification failed"})
 
-    #update the redirect URL
-    response = RedirectResponse(
-        url=f"{FRONTEND_URL}/")
+    if user_info['name'] in userDb_utils.OFFICERS_LIST:
+        logger.info(f"Officer {user_info['name']} authenticated successfully")
+        response = RedirectResponse(
+            url=f"{FRONTEND_URL}/officerDashboard")
+    else:
+        logger.info(f"User {user_info['name']} authenticated successfully")
+        #update the redirect URL
+        response = RedirectResponse(
+            url=f"{FRONTEND_URL}/dashboard")
 
     response.set_cookie(
             key="session_id",
@@ -243,18 +249,23 @@ async def check_tickets(request: Request, licensePlate: str, verified: bool = De
         logger.info(f"License plate {licensePlate} has no tickets")
         return JSONResponse(status_code=200, content={"message": f"License plate {licensePlate} has no tickets"})
 
-@app.post("/parkingPass/{licensePlate}")
+@app.post("/parkingPass/", response_model=userDb_utils.PassSignup)
 @limiter.limit("50/minute")
-async def get_parking_pass(request: Request, licensePlate: str, verified: bool = Depends(isAuthenticated)):
+async def get_parking_pass(request: Request, parkingPass:userDb_utils.PassSignup, verified: bool = Depends(isAuthenticated)):
     if not verified:
         return JSONResponse(status_code=401, content={"error": "Unauthorized"})
     else:
+        licensePlate = parkingPass.licensePlate
         name = extractUserInfo(request.cookies.get("session_id"))['name']
-        status = userDb_utils.addParkingPassToUser(licensePlate, name)
-        if status:
-            return JSONResponse(status_code=200, content={"message": "Parking pass added successfully"})
+        if name != parkingPass.name:
+            logger.warning(f"User {name} attempted to add parking pass for {parkingPass.name}")
+            return JSONResponse(status_code=403, content={"error": "You can only add a parking pass for yourself"})
         else:
-            return JSONResponse(status_code=500, content={"error": "Failed to add parking pass"})
+            status = userDb_utils.addParkingPassToUser(licensePlate, name)
+            if status:
+                return JSONResponse(status_code=200, content={"message": "Parking pass added successfully"})
+            else:
+                return JSONResponse(status_code=500, content={"error": "Failed to add parking pass"})
 
 @app.post("/addTicket", response_model=ticketsDb_utils.Ticket)
 @limiter.limit("50/minute")
@@ -311,7 +322,17 @@ async def check_license_plate(file: UploadFile = File(...)):
         logger.info(f"License plate {license_plate} does not have a valid parking pass")
         return JSONResponse(status_code=403, content={"message": f"License plate {license_plate} does not have a valid parking pass"})
 
-
+@app.get("/userinfo")
+def get_user_info(request: Request):
+    session_id = request.cookies.get("session_id")
+    if not session_id:
+        print("No session ID found in cookies for user info endpoint")
+        return JSONResponse(status_code=401, content={"error": "Unauthorized"})
+    else:
+        print("Session ID found in cookies for user info endpoint, extracting user info")
+        user_info = extractUserInfo(session_id)
+        return JSONResponse(status_code=200, content={"user_info": user_info})
+    
 userDb_utils.setupUsersDb()
 ticketsDb_utils.setupTicketsDb()
 userDb_utils.print_all_users_database()
