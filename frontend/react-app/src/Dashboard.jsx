@@ -7,10 +7,9 @@ import './Dashboard.css';
 function Dashboard() {
   const [loading, setLoading] = useState(true);
 
-  ApiClientFetch('http://localhost:8000/userinfo', {
+  ApiClientFetch('/userinfo', {
     credentials: 'include'
   })
-    .then(response => response.json())
     .then(data => {
         sessionStorage.setItem("user.name", data.user_info.name);
         sessionStorage.setItem('authStatus', true);

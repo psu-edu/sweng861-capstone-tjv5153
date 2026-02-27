@@ -39,7 +39,7 @@ TICKETS_DB_PATH = os.getenv("TICKETS_DB")
 
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI()
-origins = ["http://localhost:5173",]
+origins = ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:8000"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -68,6 +68,10 @@ async def log_requests(request: Request, call_next):
 
 @app.middleware("http")
 async def authentication_middleware(request: Request, call_next):
+    if request.method == "OPTIONS":
+        # Allow preflight requests to pass without authentication
+        return await call_next(request)
+
     if request.url.path != "/revokeParkingPass" and request.url.path != "/addTicket" and request.url.path != "/removeTicket" \
     and request.url.path != "/checkTickets" and request.url.path != "/parkingPass/" and request.url.path != "/userinfo":
         response = await call_next(request)
@@ -156,6 +160,7 @@ def extractUserInfo(token: str):
 
 async def isAuthenticated(request: Request):
     session_id = request.cookies.get("session_id")
+    print(session_id)
     if not session_id:
         print("No session ID found in cookies")
         return False
@@ -228,12 +233,12 @@ async def authCallback(response: HTMLResponse, code:str, state:str):
             key="session_id",
             value=access_token,
             httponly=True,
-            secure=True,
-            samesite="None",
+            secure=False,  # Set to True in production with HTTPS
+            samesite="lax",
             max_age=36000
         )
     
-    print("User authenticated and session cookie set")
+    logger.info(f"Session cookie set for user {user_info['name']}")
 
     return response
 

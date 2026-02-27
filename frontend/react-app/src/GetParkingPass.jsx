@@ -7,7 +7,8 @@ function GetParkingPass() {
     const [parkingPassForm, setparkingPassForm] = useState({
     name: '', licensePlate: ''});
   const [loading, setLoading] = useState(false);
-
+  let response = null;
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setparkingPassForm(prev => ({ ...prev, [name]: value }));
@@ -18,15 +19,19 @@ function GetParkingPass() {
     setLoading(true);
 
     try {
-      await ApiClientPost("/parkingPass/", parkingPassForm);
+      response = await ApiClientPost("/parkingPass/", parkingPassForm);
     } catch (error) {
       alert('Failed to add parking pass. Please try again.');
       console.error('Error submitting form:', error);
     } finally {
       setLoading(false);
-      alert('Parking Pass added successfully!');
-      window.location.href = "/passSuccess";
+      if (response.status !== 500) 
+      {
+        alert('Parking pass purchased successfully!');
+        window.location.href = "/passSuccess";
+      } 
     }
+
   };
   
   return (

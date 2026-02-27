@@ -7,7 +7,7 @@ import { ApiClientGetUserInfo } from './ApiClient.jsx';
 import Dashboard from './Dashboard';
 import OfficerDashboard from './OfficerDashboard.jsx';
 import GetParkingPass from './GetParkingPass.jsx';
-
+import PassSuccess from './PassSuccess.jsx';
 
 function Greeting() {
   return (<div>
@@ -35,6 +35,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard/>}/>
         <Route path="/officerDashboard" element={<OfficerDashboard/>}/>
         <Route path="/parkingPass" element={<GetParkingPass/>}/>
+        <Route path="/passSuccess" element={<PassSuccess/>}/>
         <Route path="*" element={<h1>Error 404 Page Not Found</h1>}/>
       </Routes>
     </div>
