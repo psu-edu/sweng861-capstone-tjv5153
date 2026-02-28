@@ -1,9 +1,30 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { Link } from 'react-router-dom';
 import './MenuBar.css';
 import logo from "./assets/logo.ico"; 
 
 const MenuBar = () => {
+
+    const [userName, setUserName] = useState(() => {
+        return sessionStorage.getItem('user.name') || 'Guest';
+    });
+    
+    useEffect(() => {
+        const updateName = () => setUserName(sessionStorage.getItem('user.name') || 'Guest');
+
+        const handleStorageChange = (e) => {
+            if (!e || e.key === 'user.name') updateName();
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+        const poll = setInterval(updateName, 50);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            clearInterval(poll);
+        };
+    }, []);
+
   return (
     <nav className="menu-bar">
         <div className="menu-logo">
@@ -18,7 +39,7 @@ const MenuBar = () => {
             <li><Link to="/login">Login</Link></li>
         </ul>
         <div className="nav-user-status">
-            {sessionStorage.getItem("user.name") ? `Hello, ${sessionStorage.getItem("user.name")}` : 'Hello, Guest'}
+            {`Hello, ${userName}`}
         </div>
     </nav>
   );

@@ -310,8 +310,11 @@ async def revoke_parking_pass(request: Request, licensePlate: str, verified: boo
 
 @app.post("/checkLicensePlate")
 async def check_license_plate(file: UploadFile = File(...)):
+    date_string = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     # Save the file locally
-    file_path = f"uploaded/{file.filename}"
+    
+    file_path = f"uploaded/{date_string}/{file.filename}"
+    os.mkdir(os.path.dirname(file_path))
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 

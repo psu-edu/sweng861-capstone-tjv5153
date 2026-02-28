@@ -42,7 +42,7 @@ function GetParkingPass() {
       </div>
       <div className="row0">
         <input name="name" placeholder="John Doe" onChange={handleChange} value={parkingPassForm.name} required />
-        <input name="licenseplate" placeholder="ABC123" onChange={handleChange} value={parkingPassForm.licenseplate} required />
+        <input name="licensePlate" placeholder="ABC123" onChange={handleChange} value={parkingPassForm.licensePlate} required />
       </div>
       <button type="submit" disabled={loading}>
         {loading ? 'Purchasing Parking Pass...' : 'Submit Details'}
