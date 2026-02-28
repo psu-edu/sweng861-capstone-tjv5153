@@ -81,7 +81,8 @@ def test_check_license_plate_noPass(mocker):
 
     # Send a POST request to the /checkLicensePlate endpoint with a test image
     with open("testLicensePlates/demo.jpg", "rb") as img_file:
-        response = client.post("/checkLicensePlate", files={"file": ("demo.jpg", img_file, "image/jpeg")})
+        response = client.post("/checkLicensePlate", files={"file": ("demo2.jpg", img_file, "image/jpeg")})
+
     
     # Assert that the response is correct
     assert response.status_code == 403

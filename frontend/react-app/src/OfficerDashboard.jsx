@@ -7,15 +7,13 @@ import './OfficerDashboard.css';
 function OfficerDashboard() {
   const [loading, setLoading] = useState(true);
 
-  fetch('http://localhost:8000/userinfo', {
+  ApiClientFetch('/userinfo', {
     credentials: 'include'
   })
-    .then(response => response.json())
     .then(data => {
         sessionStorage.setItem("user.name", data.user_info.name);
         sessionStorage.setItem('authStatus', true);
     });
-
 
     return (<div className="dashboard">
     <div className="dashboard-header">
