@@ -4,6 +4,7 @@ import { ApiClientPostFile } from "./ApiClient";
 
 function LicensePlate() {
     const [selectedFile, setSelectedFile] = useState(null);
+    const [loading, setLoading] = useState(false);
     const handleFileChange = (event) => {
     const file = event.target.files[0]; 
     setSelectedFile(file);
@@ -29,6 +30,7 @@ function LicensePlate() {
     }
   };
 
+  
     return (
         <div className="license-plate-container">
         <div className="license-plate-content">

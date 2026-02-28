@@ -51,7 +51,16 @@ button:disabled {
 
 .tickets-list {
   margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem
 }
+
+.tickets-list h2 {
+  margin-bottom: 1rem;
+  color: #dbd6d6;
+}
+
 .ticket-item {
   background-color: #b31a1a;
   padding: 1rem;

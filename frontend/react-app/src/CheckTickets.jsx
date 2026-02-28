@@ -2,6 +2,7 @@ import React from 'react';
 import './CheckTickets.css';
 import { useState } from 'react';
 import ApiClientFetch, { ApiClientPost } from './ApiClient.jsx';
+import Loading from './Loading.jsx';
 
 function CheckTickets() {
     const [tixCheck, setTixCheck] = useState({
@@ -28,8 +29,10 @@ function CheckTickets() {
     }
 
     try {
+      setLoading(true);
       response = await ApiClientFetch(`/checkTickets/${tixCheck.licensePlate}`, tixCheck);
     } catch (error) {
+      setLoading(false);
       alert('Failed to check tickets. Please try again.');
       console.error('Error submitting form:', error);
     } 
@@ -45,10 +48,12 @@ function CheckTickets() {
     }
   };
   
+  if (loading){return <Loading />; }
+
   return (
       <form onSubmit={handleSubmit} className="checkTix-form">
       <div className="form-header">
-        <h1>Check Citations</h1>
+        <h1>Check Tickets</h1>
         <p>Enter License Plate to Check Citations:</p>
       </div>
         <div className="row0">
