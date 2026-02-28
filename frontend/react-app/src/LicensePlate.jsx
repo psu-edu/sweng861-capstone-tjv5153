@@ -13,6 +13,13 @@ function LicensePlate() {
         ApiClientPostFile("/checkLicensePlate", file)
             .then(response => {
                 console.log("API response:", response);
+                if (response.status === 200) {
+                    window.location.href = "/accessGranted";
+                } else if (response.status === 403) {
+                    alert("Access denied! YOU DO NOT HAVE A VALID PARKING PASS.");
+                } else {
+                    alert("An unexpected error occurred. Please try again.");
+                }
             })
             .catch(error => {
                 console.error("Error uploading file:", error);
@@ -25,8 +32,13 @@ function LicensePlate() {
     return (
         <div className="license-plate-file-upload">
             <input type="file" onChange={handleFileChange} />
-            {selectedFile && <p>Selected file: {selectedFile.name}</p>}
+        {selectedFile && (
+        <div>
+          <h2>License Plate:</h2>
+          <img src={URL.createObjectURL(selectedFile)} alt="preview" style={{ maxWidth: '300px', maxHeight: '300px' }} />
         </div>
+      )}
+    </div>
     );
 }
 

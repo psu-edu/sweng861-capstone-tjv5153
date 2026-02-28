@@ -82,7 +82,7 @@ const ApiPostFile = async (endpoint, file) => {
             window.location.href = "/login";
             return;
         }
-        return await response.json();
+        return await response;
     } 
     catch (error) 
     {
