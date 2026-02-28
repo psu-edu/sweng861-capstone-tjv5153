@@ -72,7 +72,7 @@ async def authentication_middleware(request: Request, call_next):
         # Allow preflight requests to pass without authentication
         return await call_next(request)
 
-    if request.url.path != "/revokeParkingPass" and request.url.path != "/addTicket" and request.url.path != "/removeTicket" \
+    if "/revokeParkingPass" not in request.url.path and request.url.path != "/addTicket" and request.url.path != "/removeTicket" \
     and request.url.path != "/checkTickets" and request.url.path != "/parkingPass/" and request.url.path != "/userinfo" \
     and "/checkTickets" not in request.url.path:
         response = await call_next(request)
@@ -304,11 +304,16 @@ async def revoke_parking_pass(request: Request, licensePlate: str, verified: boo
     if not verified:
         return JSONResponse(status_code=401, content={"error": "Unauthorized"})
     else:
-        status = userDb_utils.removeParkingPassFromUser(licensePlate)
-        if status:
-            return JSONResponse(status_code=200, content={"message": "Parking pass revoked successfully"})
+        check_pass = userDb_utils.checkIfUserHasParkingPass(licensePlate)
+        if not check_pass:
+            logger.info(f"Attempted to revoke parking pass for license plate {licensePlate} which does not have a parking pass")
+            return JSONResponse(status_code=400, content={"error": f"License plate {licensePlate} does not have a parking pass"})
         else:
-            return JSONResponse(status_code=500, content={"error": "Failed to revoke parking pass"})
+            status = userDb_utils.removeParkingPassFromUser(licensePlate)
+            if status:
+                return JSONResponse(status_code=200, content={"message": "Parking pass revoked successfully"})
+            else:
+                return JSONResponse(status_code=500, content={"error": "Failed to revoke parking pass"})
 
 @app.post("/checkLicensePlate")
 async def check_license_plate(file: UploadFile = File(...)):

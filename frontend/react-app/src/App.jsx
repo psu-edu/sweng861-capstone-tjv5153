@@ -12,6 +12,7 @@ import LicensePlate from './LicensePlate.jsx';
 import AccessGranted from './AccessGranted.jsx';
 import Citation from './Citation.jsx';
 import CheckTickets from './CheckTickets.jsx';
+import RevokeParkingPass from './RevokeParkingPass.jsx';
 
 function Greeting() {
   return (<div>
@@ -51,8 +52,8 @@ function App() {
         <Route path="/accessGranted" element={<AccessGranted/>}/>
         <Route path="/checkTickets" element={<CheckTickets/>}/>
         <Route path="/citation" element={<Citation/>}/>
-        <Route path="revokePass" element={<h1>Revoke Parking Pass Page (Under Construction)</h1>}/>
-        <Route path="removeTicket" element={<h1>Remove Citation Page (Under Construction)</h1>}/>
+        <Route path="/revokePass" element={<RevokeParkingPass/>}/>
+        <Route path="/removeTicket" element={<h1>Remove Citation Page (Under Construction)</h1>}/>
         <Route path="*" element={<h1>Error 404 Page Not Found</h1>}/>
       </Routes>
     </div>

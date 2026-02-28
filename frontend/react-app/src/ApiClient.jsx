@@ -91,6 +91,35 @@ const ApiPostFile = async (endpoint, file) => {
     }
 }
 
+const ApiPut = async (endpoint, data) => {
+    console.log("Making API PUT request to: ", endpoint, " with data: ", data);
+    try 
+    {
+        const response = await fetch(`${API_URL}${endpoint}`, {
+            credentials: 'include',
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        if (!response.ok) 
+        {
+            throw new Error(`API PUT request failed: ${response.statusText}`);
+        }
+        if (response.status === 401 || response.status === 403)
+        {
+            console.log("User is not authenticated. Redirecting to login page...");
+            sessionStorage.setItem("authStatus", false);
+            window.location.href = "/login";
+            return;
+        }
+        return await response;
+    } 
+    catch (error) 
+    {
+        console.error("API POST error:", error);
+        throw error;
+    }
+}
 
 async function GetUserInfo() 
 {
@@ -113,6 +142,11 @@ async function ApiClientPostFile(endpoint, file)
     return await ApiPostFile(endpoint, file);
 }
 
+async function ApiClientPut(endpoint, data)
+{
+    return await ApiPut(endpoint, data);
+}
+
 async function ApiClientGetUserInfo() 
 {
     return await GetUserInfo();
@@ -121,3 +155,4 @@ export default ApiClientFetch;
 export { ApiClientGetUserInfo };
 export { ApiClientPost };
 export { ApiClientPostFile };
+export { ApiClientPut };

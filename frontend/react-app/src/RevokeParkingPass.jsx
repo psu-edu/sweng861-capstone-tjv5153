@@ -1,7 +1,7 @@
 import React from 'react';
-import './GetParkingPass.css';
+import './RevokeParkingPass.css';
 import { useState } from 'react';
-import { ApiClientPost } from './ApiClient.jsx';
+import { ApiClientPut } from './ApiClient.jsx';
 
 function GetParkingPass() {
     const [parkingPassForm, setparkingPassForm] = useState({
@@ -19,16 +19,21 @@ function GetParkingPass() {
     setLoading(true);
 
     try {
-      response = await ApiClientPost("/parkingPass/", parkingPassForm);
+      response = await ApiClientPut(`/revokeParkingPass/${parkingPassForm.licensePlate}/`);
     } catch (error) {
-      alert('Failed to add parking pass. Please try again.');
-      console.error('Error submitting form:', error);
+      if (error && error.message.includes("Bad Request")) {
+        alert(`License plate ${parkingPassForm.licensePlate} does not have a parking pass.`);
+        setparkingPassForm(prev => ({ ...prev, licensePlate: '' , name: ''}));
+      } else {
+        alert('Failed to revoke parking pass. Please try again.');
+        console.error('Error submitting form:', error.message);
+      }
     } finally {
       setLoading(false);
-      if (response.status !== 500) 
+      if (response && response.status == 200) 
       {
-        alert('Parking pass purchased successfully!');
-        window.location.href = "/passSuccess";
+        alert('Parking pass revoked successfully!');
+        window.location.href = "/officerDashboard";
       } 
     }
 
@@ -37,15 +42,15 @@ function GetParkingPass() {
   return (
       <form onSubmit={handleSubmit} className="pass-form">
       <div className="form-header">
-        <h1>Get Parking Pass</h1>
-        <p>Enter your information below:</p>
+        <h1>Revoke Parking Pass</h1>
+        <p>Enter information below:</p>
       </div>
       <div className="row0">
         <input name="name" placeholder="John Doe" onChange={handleChange} value={parkingPassForm.name} required />
         <input name="licensePlate" placeholder="ABC123" onChange={handleChange} value={parkingPassForm.licensePlate} required />
       </div>
       <button type="submit" disabled={loading}>
-        {loading ? 'Purchasing Parking Pass...' : 'Submit Details'}
+        {loading ? 'Revoking Parking Pass...' : 'Submit Details'}
       </button>
       </form>
     );
