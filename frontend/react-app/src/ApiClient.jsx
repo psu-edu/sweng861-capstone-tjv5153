@@ -121,6 +121,36 @@ const ApiPut = async (endpoint, data) => {
     }
 }
 
+const ApiDelete = async (endpoint, data) => {
+    console.log("Making API DELETE request to: ", endpoint, " with data: ", data);
+    try 
+    {
+        const response = await fetch(`${API_URL}${endpoint}`, {
+            credentials: 'include',
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        if (!response.ok) 
+        {
+            throw new Error(`API DELETE request failed: ${response.statusText}`);
+        }
+        if (response.status === 401 || response.status === 403)
+        {
+            console.log("User is not authenticated. Redirecting to login page...");
+            sessionStorage.setItem("authStatus", false);
+            window.location.href = "/login";
+            return;
+        }
+        return await response;
+    } 
+    catch (error) 
+    {
+        console.error("API POST error:", error);
+        throw error;
+    }
+}
+
 async function GetUserInfo() 
 {
     const endpoint = "/userinfo";
@@ -147,6 +177,11 @@ async function ApiClientPut(endpoint, data)
     return await ApiPut(endpoint, data);
 }
 
+async function ApiClientDelete(endpoint)
+{
+    return await ApiDelete(endpoint);
+}
+
 async function ApiClientGetUserInfo() 
 {
     return await GetUserInfo();
@@ -156,3 +191,4 @@ export { ApiClientGetUserInfo };
 export { ApiClientPost };
 export { ApiClientPostFile };
 export { ApiClientPut };
+export { ApiClientDelete };

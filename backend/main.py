@@ -280,11 +280,16 @@ async def add_ticket(request: Request, ticket:ticketsDb_utils.Ticket, verified: 
     if not verified:
         return JSONResponse(status_code=401, content={"error": "Unauthorized"})
     else:
-        status = ticketsDb_utils.addTicket(ticket)
-        if status:
-            return JSONResponse(status_code=200, content={"message": "Ticket added successfully"})
+        IdExists = ticketsDb_utils.checkIfIdExists(ticket.ticketNumber)
+        if IdExists:
+            logger.warning(f"Attempted to add ticket with duplicate ID {ticket.ticketNumber}")
+            return JSONResponse(status_code=400, content={"error": f"Ticket with ID {ticket.ticketNumber} already exists"})
         else:
-            return JSONResponse(status_code=500, content={"error": "Failed to add ticket"})
+            status = ticketsDb_utils.addTicket(ticket)
+            if status:
+                return JSONResponse(status_code=200, content={"message": "Ticket added successfully"})
+            else:
+                return JSONResponse(status_code=500, content={"error": "Failed to add ticket"})
 
 @app.delete("/removeTicket/{ticketId}")
 @limiter.limit("50/minute")
@@ -292,10 +297,12 @@ async def remove_ticket(request: Request, ticketId: int, verified: bool = Depend
     if not verified:
         return JSONResponse(status_code=401, content={"error": "Unauthorized"})
     else:
+        logger.info(f"Attempting to remove ticket with ID {ticketId}")
         status = ticketsDb_utils.removeTicket(ticketId)
         if status:
             return JSONResponse(status_code=200, content={"message": "Ticket removed successfully"})
         else:
+            logger.error(f"Failed to remove ticket with ID {ticketId}")
             return JSONResponse(status_code=500, content={"error": "Failed to remove ticket"})
 
 @app.put("/revokeParkingPass/{licensePlate}")

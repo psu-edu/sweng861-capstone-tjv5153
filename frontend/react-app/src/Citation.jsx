@@ -54,8 +54,13 @@ function Citation() {
     try {
       response = await ApiClientPost("/addTicket", Citation);
     } catch (error) {
-      alert('Failed to add citation. Please try again.');
-      console.error('Error submitting form:', error);
+      if (error && error.message.includes("Bad Request")) {
+        alert("A ticket with that ID already exists. Please use a unique ticket number.");
+      }
+      else {
+        alert('Failed to add citation. Please try again.');
+        console.error('Error submitting form:', error);
+      }
     } finally {
       setLoading(false);
       if (response && response.status === 200) {
@@ -90,7 +95,7 @@ function Citation() {
             <input name="violation" type="text" placeholder="Violation Description" onChange={handleChange} value={Citation.violation} required />
         </div>
       <button type="submit" disabled={loading}>
-        {loading ? 'Assigning Citation...' : 'Submit Details'}
+        {loading ? 'Assigning Citation...' : 'Submit Citation'}
       </button>
       </form>
     );

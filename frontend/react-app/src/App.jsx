@@ -13,6 +13,7 @@ import AccessGranted from './AccessGranted.jsx';
 import Citation from './Citation.jsx';
 import CheckTickets from './CheckTickets.jsx';
 import RevokeParkingPass from './RevokeParkingPass.jsx';
+import RemoveCitation from './RemoveCitation.jsx';
 
 function Greeting() {
   return (<div>
@@ -53,7 +54,7 @@ function App() {
         <Route path="/checkTickets" element={<CheckTickets/>}/>
         <Route path="/citation" element={<Citation/>}/>
         <Route path="/revokePass" element={<RevokeParkingPass/>}/>
-        <Route path="/removeTicket" element={<h1>Remove Citation Page (Under Construction)</h1>}/>
+        <Route path="/removeTicket" element={<RemoveCitation/>}/>
         <Route path="*" element={<h1>Error 404 Page Not Found</h1>}/>
       </Routes>
     </div>

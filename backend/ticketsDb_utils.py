@@ -78,8 +78,25 @@ def removeTicket(ticketNumber):
         conn.commit()
         conn.close()
         print(f"Ticket {ticketNumber} removed successfully")
+        return True
     except sqlite3.Error as e:
         print(f"Failed to remove ticket {ticketNumber}: {e}")
+        return False
+    
+def checkIfIdExists(ticketNumber):
+    try:
+        conn = sqlite3.connect(TICKETS_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM Tickets WHERE ticketNumber = ?", (ticketNumber,))
+        ticket = cursor.fetchone()
+        conn.close()
+        if ticket:
+            return True
+        else:
+            return False
+    except sqlite3.Error as e:
+        print(f"Failed to check if ticket number {ticketNumber} exists: {e}")
+        return False
 
 #Used for testing purposes to print all tickets in the database
 def print_all_tickets_database():

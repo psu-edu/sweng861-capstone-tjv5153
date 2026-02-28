@@ -50,7 +50,7 @@ function GetParkingPass() {
         <input name="licensePlate" placeholder="ABC123" onChange={handleChange} value={parkingPassForm.licensePlate} required />
       </div>
       <button type="submit" disabled={loading}>
-        {loading ? 'Revoking Parking Pass...' : 'Submit Details'}
+        {loading ? 'Revoking Parking Pass...' : 'Revoke Commuter Pass'}
       </button>
       </form>
     );
