@@ -11,10 +11,11 @@ import PassSuccess from './PassSuccess.jsx';
 import LicensePlate from './LicensePlate.jsx';
 import AccessGranted from './AccessGranted.jsx';
 import Citation from './Citation.jsx';
+import CheckTickets from './CheckTickets.jsx';
 
 function Greeting() {
   return (<div>
-            <h1>Campus Transit Portal</h1>
+            <h1>Penn State Transit Portal</h1>
             <h2>Purchase Parking Passes, Check For Citations, and Access Parking Garages.</h2>
           </div>
     );
@@ -23,7 +24,14 @@ function Greeting() {
 function Home() {
   return (
     <div>
-      <Greeting />
+      <div className="home-container">
+        <div className="home-picture">
+          <img src="src/assets/BehrendGarage.jpg"/>
+        </div>
+        <div className="home-header">
+          <Greeting />
+        </div>
+      </div>
     </div>
   );
 }
@@ -41,8 +49,8 @@ function App() {
         <Route path="/passSuccess" element={<PassSuccess/>}/>
         <Route path="/licensePlate" element={<LicensePlate/>}/>
         <Route path="/accessGranted" element={<AccessGranted/>}/>
-        <Route path="checkTickets" element={<h1>Check Citations Page (Under Construction)</h1>}/>
-        <Route path="citation" element={<Citation/>}/>
+        <Route path="/checkTickets" element={<CheckTickets/>}/>
+        <Route path="/citation" element={<Citation/>}/>
         <Route path="revokePass" element={<h1>Revoke Parking Pass Page (Under Construction)</h1>}/>
         <Route path="removeTicket" element={<h1>Remove Citation Page (Under Construction)</h1>}/>
         <Route path="*" element={<h1>Error 404 Page Not Found</h1>}/>

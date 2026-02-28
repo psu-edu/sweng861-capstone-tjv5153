@@ -1,4 +1,4 @@
-.citation-form {
+.checkTix-form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -13,25 +13,6 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 1rem;
-}
-
-.row1 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.row2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.row3 {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-  height: 250px;
 }
 
 input, select {
@@ -66,4 +47,15 @@ button:hover:not(:disabled) {
 button:disabled {
   background-color: #94a3b8;
   cursor: not-allowed;
+}
+
+.tickets-list {
+  margin-top: 2rem;
+}
+.ticket-item {
+  background-color: #b31a1a;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }

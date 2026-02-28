@@ -21,7 +21,7 @@ const ApiFetch = async (endpoint) => {
 
             throw new Error(`API request failed: ${response.statusText}`);
         }
-        return await response.json();
+        return await response;
     } 
     catch (error) 
     {
@@ -51,7 +51,7 @@ const ApiPost = async (endpoint, data) => {
             window.location.href = "/login";
             return;
         }
-        return await response.json();
+        return await response;
     } 
     catch (error) 
     {

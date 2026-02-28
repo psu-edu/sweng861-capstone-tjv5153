@@ -10,9 +10,10 @@ function Dashboard() {
   ApiClientFetch('/userinfo', {
     credentials: 'include'
   })
-    .then(data => {
-        sessionStorage.setItem("user.name", data.user_info.name);
-        sessionStorage.setItem('authStatus', true);
+    .then(async (response) => {
+      const data = await response.json();
+      sessionStorage.setItem("user.name", data.user_info.name);
+      sessionStorage.setItem('authStatus', true);
     });
 
 

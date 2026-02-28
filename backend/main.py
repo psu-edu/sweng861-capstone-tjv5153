@@ -73,7 +73,8 @@ async def authentication_middleware(request: Request, call_next):
         return await call_next(request)
 
     if request.url.path != "/revokeParkingPass" and request.url.path != "/addTicket" and request.url.path != "/removeTicket" \
-    and request.url.path != "/checkTickets" and request.url.path != "/parkingPass/" and request.url.path != "/userinfo":
+    and request.url.path != "/checkTickets" and request.url.path != "/parkingPass/" and request.url.path != "/userinfo" \
+    and "/checkTickets" not in request.url.path:
         response = await call_next(request)
         print("No authentication required for this path")
         return response
@@ -160,13 +161,13 @@ def extractUserInfo(token: str):
 
 async def isAuthenticated(request: Request):
     session_id = request.cookies.get("session_id")
-    print(session_id)
+    #print(session_id)
     if not session_id:
         print("No session ID found in cookies")
         return False
     else:
         is_valid = await validateTokens(session_id, "access_token")
-        print("Verified using depends")
+        logger.info(f"Session ID validation result: {is_valid}")
         return is_valid
     
 async def isAuthenticated_officer(request: Request):
@@ -249,7 +250,8 @@ async def check_tickets(request: Request, licensePlate: str, verified: bool = De
     tickets = ticketsDb_utils.checkIfLicensePlateHasTicket(licensePlate)
     if tickets:
         logger.info(f"License plate {licensePlate} has {len(tickets)} ticket(s)")
-        return JSONResponse(status_code=200, content={"tickets": tickets})
+        print(tickets)
+        return tickets
     else:
         logger.info(f"License plate {licensePlate} has no tickets")
         return JSONResponse(status_code=200, content={"message": f"License plate {licensePlate} has no tickets"})

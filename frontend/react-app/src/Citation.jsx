@@ -7,7 +7,7 @@ function Citation() {
     const [Citation, setCitation] = useState({
     ticketNumber: '', licensePlate: '', issueDate: '', violation: '', fineAmount: 0.0, officerName: ''
   });
-
+  let response = null;
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -52,14 +52,20 @@ function Citation() {
 
 
     try {
-      await ApiClientPost("/addTicket", Citation);
+      response = await ApiClientPost("/addTicket", Citation);
     } catch (error) {
       alert('Failed to add citation. Please try again.');
       console.error('Error submitting form:', error);
     } finally {
       setLoading(false);
-      alert('Citation added successfully!');
-      window.location.href = "/officerDashboard";
+      if (response && response.status === 200) {
+        alert('Citation added successfully!');
+        window.location.href = "/officerDashboard";
+      }
+      else {
+        alert("Failed To Add Ticket. Try Again.")
+      }
+
     }
   };
   
@@ -69,16 +75,16 @@ function Citation() {
         <h1>Write Citation</h1>
         <p>Complete Each Field Below:</p>
       </div>
-      <div className="row0">
+        <div className="row0">
+        <input name="officerName" placeholder="Officer Name" onChange={handleChange} value={Citation.officerName} required />
+      </div>
+      <div className="row1">
         <input name="ticketNumber" placeholder="Ticket Number" onChange={handleChange} value={Citation.ticketNumber} required />
         <input name="licensePlate" placeholder="License Plate" onChange={handleChange} value={Citation.licensePlate} required />
       </div>
-      <div className="row1">
-        <input name="make" placeholder="Issue Date" onChange={handleChange} value={Citation.issueDate} required />
-        <input name="model" placeholder="Fine Amount" onChange={handleChange} value={Citation.fineAmount} required />
-      </div>
       <div className="row2">
-        <input name="officerName" placeholder="Officer Name" onChange={handleChange} value={Citation.officerName} required />
+        <input name="issueDate" placeholder="Issue Date" onChange={handleChange} value={Citation.issueDate} required />
+        <input name="fineAmount" placeholder="Fine Amount" onChange={handleChange} value={Citation.fineAmount} required />
       </div>
       <div className="row3">
             <input name="violation" type="text" placeholder="Violation Description" onChange={handleChange} value={Citation.violation} required />

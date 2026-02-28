@@ -30,6 +30,12 @@ function LicensePlate() {
   };
 
     return (
+        <div className="license-plate-container">
+        <div className="license-plate-content">
+            <h1>License Plate Recognition</h1>
+            <p>Please upload an image of your license plate to access the garage</p>
+            <p>If this system were deployed, it would use a camera to check your license plate and grant access if you have a valid parking pass.</p>
+        </div>
         <div className="license-plate-file-upload">
             <input type="file" onChange={handleFileChange} />
         {selectedFile && (
@@ -38,6 +44,7 @@ function LicensePlate() {
           <img src={URL.createObjectURL(selectedFile)} alt="preview" style={{ maxWidth: '300px', maxHeight: '300px' }} />
         </div>
       )}
+    </div>
     </div>
     );
 }
