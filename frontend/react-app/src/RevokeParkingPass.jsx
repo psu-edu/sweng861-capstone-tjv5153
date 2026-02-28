@@ -2,6 +2,7 @@ import React from 'react';
 import './RevokeParkingPass.css';
 import { useState } from 'react';
 import { ApiClientPut } from './ApiClient.jsx';
+import loading from './Loading.jsx';
 
 function GetParkingPass() {
     const [parkingPassForm, setparkingPassForm] = useState({
@@ -19,6 +20,7 @@ function GetParkingPass() {
     setLoading(true);
 
     try {
+      setLoading(true);
       response = await ApiClientPut(`/revokeParkingPass/${parkingPassForm.licensePlate}/`);
     } catch (error) {
       if (error && error.message.includes("Bad Request")) {
@@ -39,6 +41,7 @@ function GetParkingPass() {
 
   };
   
+  if (loading) { return <Loading />; }
   return (
       <form onSubmit={handleSubmit} className="pass-form">
       <div className="form-header">

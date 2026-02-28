@@ -2,6 +2,7 @@ import React from 'react';
 import './GetParkingPass.css';
 import { useState } from 'react';
 import { ApiClientPost } from './ApiClient.jsx';
+import Loading from './Loading.jsx';
 
 function GetParkingPass() {
     const [parkingPassForm, setparkingPassForm] = useState({
@@ -19,6 +20,7 @@ function GetParkingPass() {
     setLoading(true);
 
     try {
+      setLoading(true);
       response = await ApiClientPost("/parkingPass/", parkingPassForm);
     } catch (error) {
       alert('Failed to add parking pass. Please try again.');
@@ -34,6 +36,7 @@ function GetParkingPass() {
 
   };
   
+  if (loading) { return <Loading />; }
   return (
       <form onSubmit={handleSubmit} className="pass-form">
       <div className="form-header">

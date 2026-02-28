@@ -2,6 +2,7 @@ import React from 'react';
 import './RemoveCitation.css';
 import { useState } from 'react';
 import { ApiClientDelete, ApiClientPut } from './ApiClient.jsx';
+import Loading from './Loading.jsx';
 
 function RemoveCitation() {
     const [removeTicketForm, setRemoveTicketForm] = useState({
@@ -19,6 +20,7 @@ function RemoveCitation() {
     setLoading(true);
 
     try {
+      setLoading(true);
       response = await ApiClientDelete(`/removeTicket/${removeTicketForm.ticketNumber}/`);
     } catch (error) {
       if (error && error.message.includes("Bad Request")) {
@@ -38,6 +40,7 @@ function RemoveCitation() {
     }
   };
   
+  if (loading) { return <Loading />; }
   return (
       <form onSubmit={handleSubmit} className="remove-citation-form">
       <div className="form-header">

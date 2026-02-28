@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import './LicensePlate.css';
 import { ApiClientPostFile } from "./ApiClient";
+import Loading from './Loading.jsx';
 
 function LicensePlate() {
     const [selectedFile, setSelectedFile] = useState(null);
@@ -11,8 +12,10 @@ function LicensePlate() {
     console.log("File selected:", file);
 
     try {
+        setLoading(true);
         ApiClientPostFile("/checkLicensePlate", file)
             .then(response => {
+                setLoading(false);
                 console.log("API response:", response);
                 if (response.status === 200) {
                     window.location.href = "/accessGranted";
@@ -23,14 +26,17 @@ function LicensePlate() {
                 }
             })
             .catch(error => {
+                setLoading(false);
                 console.error("Error uploading file:", error);
             });
     } catch (error) {
+        setLoading(false);
         console.error("Unexpected error:", error);
     }
   };
 
-  
+    if (loading) { return <Loading />; }
+
     return (
         <div className="license-plate-container">
         <div className="license-plate-content">

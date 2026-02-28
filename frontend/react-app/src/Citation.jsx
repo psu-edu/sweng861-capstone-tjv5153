@@ -2,6 +2,7 @@ import React from 'react';
 import './Citation.css';
 import { useState } from 'react';
 import { ApiClientPost } from './ApiClient.jsx';
+import Loading from './Loading.jsx';
 
 function Citation() {
     const [Citation, setCitation] = useState({
@@ -52,6 +53,7 @@ function Citation() {
 
 
     try {
+      setLoading(true);
       response = await ApiClientPost("/addTicket", Citation);
     } catch (error) {
       if (error && error.message.includes("Bad Request")) {
@@ -70,10 +72,10 @@ function Citation() {
       else {
         alert("Failed To Add Ticket. Try Again.")
       }
-
     }
   };
-  
+
+  if (loading) { return <Loading />; }
   return (
       <form onSubmit={handleSubmit} className="citation-form">
       <div className="form-header">
