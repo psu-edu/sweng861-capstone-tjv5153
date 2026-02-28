@@ -14,6 +14,7 @@ import Citation from './Citation.jsx';
 import CheckTickets from './CheckTickets.jsx';
 import RevokeParkingPass from './RevokeParkingPass.jsx';
 import RemoveCitation from './RemoveCitation.jsx';
+import Footer from './Footer.jsx';
 
 function Greeting() {
   return (<div>
@@ -40,7 +41,7 @@ function Home() {
 
 function App() {
   return (
-    <div>
+    <div className="App">
       <MenuBar />
       <Routes>
         <Route path="/" element={<Home/>}/>
@@ -57,6 +58,7 @@ function App() {
         <Route path="/removeTicket" element={<RemoveCitation/>}/>
         <Route path="*" element={<h1>Error 404 Page Not Found</h1>}/>
       </Routes>
+      <Footer />
     </div>
   );
 }

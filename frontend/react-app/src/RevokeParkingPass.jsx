@@ -2,9 +2,9 @@ import React from 'react';
 import './RevokeParkingPass.css';
 import { useState } from 'react';
 import { ApiClientPut } from './ApiClient.jsx';
-import loading from './Loading.jsx';
+import Loading from './Loading.jsx';
 
-function GetParkingPass() {
+function RevokeParkingPass() {
     const [parkingPassForm, setparkingPassForm] = useState({
     name: '', licensePlate: ''});
   const [loading, setLoading] = useState(false);
@@ -59,4 +59,4 @@ function GetParkingPass() {
     );
 }
 
-export default GetParkingPass;
+export default RevokeParkingPass;

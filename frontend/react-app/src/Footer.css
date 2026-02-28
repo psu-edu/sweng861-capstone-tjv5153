@@ -1,0 +1,27 @@
+/* Footer.css - styles for site footer */
+
+:root{
+    --footer-bg: #0f1724; /* deep slate */
+    --footer-text: #e6eef8;
+    --footer-muted: #9fb3d1;
+    --accent: #60a5fa; /* blue-400 */
+    --footer-elev: rgba(2,6,23,0.6);
+}
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: linear-gradient(180deg, var(--footer-bg), var(--footer-elev));
+    color: var(--footer-text);
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    box-sizing: border-box;
+    border-top: 1px solid rgba(255,255,255,0.03);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    font-size: 0.95rem;
+    line-height: 1.3;
+}
