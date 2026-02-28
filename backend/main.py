@@ -314,7 +314,10 @@ async def check_license_plate(file: UploadFile = File(...)):
     # Save the file locally
     
     file_path = f"uploaded/{date_string}/{file.filename}"
-    os.mkdir(os.path.dirname(file_path))
+
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
+        
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
