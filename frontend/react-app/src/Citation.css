@@ -9,25 +9,25 @@
   color: #dbd6d6;
 }
 
-.row0 {
+.row0-citation-form {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1rem;
 }
 
-.row1 {
+.row1-citation-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
 
-.row2 {
+.row2-citation-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
 
-.row3 {
+.row3-citation-form {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1rem;

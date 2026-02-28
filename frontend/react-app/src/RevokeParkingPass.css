@@ -9,7 +9,7 @@
   color: #dbd6d6;
 }
 
-.row0 {
+.row0-pass-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;

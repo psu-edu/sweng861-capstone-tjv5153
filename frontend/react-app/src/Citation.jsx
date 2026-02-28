@@ -5,7 +5,7 @@ import { ApiClientPost } from './ApiClient.jsx';
 
 function Citation() {
     const [Citation, setCitation] = useState({
-    ticketNumber: '', licensePlate: '', issueDate: '', violation: '', fineAmount: 0.0, officerName: ''
+    ticketNumber: '', licensePlate: '', issueDate: '', violation: '', fineAmount: '', officerName: ''
   });
   let response = null;
   const [loading, setLoading] = useState(false);
@@ -75,18 +75,18 @@ function Citation() {
         <h1>Write Citation</h1>
         <p>Complete Each Field Below:</p>
       </div>
-        <div className="row0">
+        <div className="row0-citation-form">
         <input name="officerName" placeholder="Officer Name" onChange={handleChange} value={Citation.officerName} required />
       </div>
-      <div className="row1">
+      <div className="row1-citation-form">
         <input name="ticketNumber" placeholder="Ticket Number" onChange={handleChange} value={Citation.ticketNumber} required />
         <input name="licensePlate" placeholder="License Plate" onChange={handleChange} value={Citation.licensePlate} required />
       </div>
-      <div className="row2">
+      <div className="row2-citation-form">
         <input name="issueDate" placeholder="Issue Date" onChange={handleChange} value={Citation.issueDate} required />
         <input name="fineAmount" placeholder="Fine Amount" onChange={handleChange} value={Citation.fineAmount} required />
       </div>
-      <div className="row3">
+      <div className="row3-citation-form">
             <input name="violation" type="text" placeholder="Violation Description" onChange={handleChange} value={Citation.violation} required />
         </div>
       <button type="submit" disabled={loading}>

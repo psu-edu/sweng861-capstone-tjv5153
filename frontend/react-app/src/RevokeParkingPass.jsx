@@ -45,7 +45,7 @@ function GetParkingPass() {
         <h1>Revoke Parking Pass</h1>
         <p>Enter information below:</p>
       </div>
-      <div className="row0">
+      <div className="row0-pass-form">
         <input name="name" placeholder="John Doe" onChange={handleChange} value={parkingPassForm.name} required />
         <input name="licensePlate" placeholder="ABC123" onChange={handleChange} value={parkingPassForm.licensePlate} required />
       </div>
