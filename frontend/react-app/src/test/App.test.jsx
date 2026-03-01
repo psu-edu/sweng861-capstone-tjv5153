@@ -22,7 +22,7 @@ describe('App', () => {
             </MemoryRouter>
         );
         expect(screen.getByTestId('menubar')).toBeInTheDocument();
-        expect(screen.getByText(/Campus Transit Portal/i)).toBeInTheDocument();
+        expect(screen.getByText(/Penn State Transit Portal/i)).toBeInTheDocument();
     });
 
     test('renders Login page when navigating to /login', () => {

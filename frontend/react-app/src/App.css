@@ -50,7 +50,8 @@
 }
 
 .home-picture {
-  margin-top: 20px;
+  margin-top: 5px;
+  align-self: center;
 }
 
 .home-header {

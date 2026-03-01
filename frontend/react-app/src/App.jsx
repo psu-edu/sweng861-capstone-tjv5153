@@ -17,7 +17,7 @@ import RemoveCitation from './RemoveCitation.jsx';
 import Footer from './Footer.jsx';
 
 function Greeting() {
-  return (<div>
+  return (<div className="home-greeting">
             <h1>Penn State Transit Portal</h1>
             <h2>Purchase Parking Passes, Check For Citations, and Access Parking Garages.</h2>
           </div>
@@ -28,9 +28,9 @@ function Home() {
   return (
     <div>
       <div className="home-container">
-        <div className="home-picture">
-          <img src="src/assets/BehrendGarage.jpg"/>
-        </div>
+          <div className="home-picture">
+            <img src="src/assets/BehrendGarage.jpg"/>
+          </div>
         <div className="home-header">
           <Greeting />
         </div>

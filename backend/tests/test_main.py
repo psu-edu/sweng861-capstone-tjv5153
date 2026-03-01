@@ -101,6 +101,7 @@ def test_revoke_parking_pass(mocker):
 
     # Mock the revokeParkingPass function to return True
     mocker.patch('userDb_utils.removeParkingPassFromUser', return_value=True)
+    mocker.patch('userDb_utils.checkIfUserHasParkingPass', return_value=True)
 
     # Send a POST request to the /revokeParkingPass endpoint with a test license plate
     client.cookies.set("session_id", TEST_TOKEN)
@@ -121,6 +122,7 @@ def test_revoke_parking_pass_db_fail(mocker):
     mocker.patch('main.validateTokens', mock_validateTokens)
 
     # Parking pass is failed to be revoked in the database
+    mocker.patch('userDb_utils.checkIfUserHasParkingPass', return_value=True)
     mocker.patch('userDb_utils.removeParkingPassFromUser', return_value=False)
 
     # Send a POST request to the /revokeParkingPass endpoint with a test license plate
@@ -267,21 +269,37 @@ def test_get_parking_pass_not_authenticated(mocker):
     assert response.status_code == 401
     assert response.json() == {"Unauthorized": "Valid access token is required"}
 
-def test_check_tickets(mocker):
+@pytest.mark.asyncio
+async def test_check_tickets(mocker):
     app.dependency_overrides[isAuthenticated] = override_isAuthenticated_user_true
 
     mocker.patch('ticketsDb_utils.checkIfLicensePlateHasTicket', return_value=[{"ticketNumber" : "TEST123", "licensePlate" : "TEST123", "issueDate" : "2023-01-01", "violation" : "Test Violation", "fineAmount" : 50.0, "officerName" : "Officer Test"}])
+    mock_auth_middleware = AsyncMock(return_value=True)
+    mocker.patch('main.authentication_middleware', mock_auth_middleware)
+    mock_validateTokens = AsyncMock(return_value=True)
+    mocker.patch('main.validateTokens', mock_validateTokens)
     
+    client.cookies.set("session_id", TEST_TOKEN)
     response = client.get("/checkTickets/TEST123")
     
     assert response.status_code == 200
-    assert response.json() == {"tickets": [{"ticketNumber" : "TEST123", "licensePlate" : "TEST123", "issueDate" : "2023-01-01", "violation" : "Test Violation", "fineAmount" : 50.0, "officerName" : "Officer Test"}]}
+    assert response.json() == [{"ticketNumber" : "TEST123", "licensePlate" : "TEST123", "issueDate" : "2023-01-01", "violation" : "Test Violation", "fineAmount" : 50.0, "officerName" : "Officer Test"}]
+    client.cookies.clear()
 
 def test_check_tickets_no_tickets(mocker):
     app.dependency_overrides[isAuthenticated] = override_isAuthenticated_user_true
-
+    
+    mocker.patch('ticketsDb_utils.checkIfLicensePlateHasTicket', return_value=[{"ticketNumber" : "TEST123", "licensePlate" : "TEST123", "issueDate" : "2023-01-01", "violation" : "Test Violation", "fineAmount" : 50.0, "officerName" : "Officer Test"}])
+    
+    mock_auth_middleware = AsyncMock(return_value=True)
+    mocker.patch('main.authentication_middleware', mock_auth_middleware)
+    
+    mock_validateTokens = AsyncMock(return_value=True)
+    mocker.patch('main.validateTokens', mock_validateTokens)
+    
     mocker.patch('ticketsDb_utils.checkIfLicensePlateHasTicket', return_value=[])
     
+    client.cookies.set("session_id", TEST_TOKEN)
     response = client.get("/checkTickets/TEST123")
 
     assert response.status_code == 200
