@@ -98,6 +98,16 @@ def checkIfIdExists(ticketNumber):
         print(f"Failed to check if ticket number {ticketNumber} exists: {e}")
         return False
 
+def isDbUp():
+    try:
+        conn = sqlite3.connect(TICKETS_DB_PATH)
+        conn.execute("SELECT 1")
+        conn.close()
+        return True
+    except sqlite3.Error as e:
+        print(f"Tickets Database connection failed: {e}")
+        return False
+    
 #Used for testing purposes to print all tickets in the database
 def print_all_tickets_database():
     try:
