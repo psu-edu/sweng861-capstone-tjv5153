@@ -373,7 +373,7 @@ async def test_isAuthenticated_noToken(mocker, capsys):
 def test_health_check():
     response = client.get("/health")
     assert response.status_code == 200
-    assert response.json() == {"status": "ok"}
+    assert response.json() == {"status": "UP", "db": "UP"}
 
 def test_favicon():
     response = client.get("/favicon.ico")

@@ -19,6 +19,11 @@ import ticketsDb_utils
 import userDb_utils
 import LicensePlateRecognitionAPI
 import logging
+from fastapi.testclient import TestClient
+from prometheus_client import generate_latest, REGISTRY
+from metrics import metrics_middleware
+from starlette.responses import Response
+from fastapi.responses import PlainTextResponse
 
 #configure logging
 date_string = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -39,6 +44,9 @@ TICKETS_DB_PATH = os.getenv("TICKETS_DB")
 
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI()
+
+app.middleware("http")(metrics_middleware)
+
 origins = ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:8000"]
 
 app.add_middleware(
@@ -191,9 +199,32 @@ def home(request: Request):
 async def get_favicon():
     return FileResponse("../frontend/templates/favicon.ico")
 
+@app.get("/metrics", response_class=PlainTextResponse)
+async def metrics():
+    metrics = generate_latest(REGISTRY)
+    return Response(content=metrics, media_type="text/plain")
+
 @app.get("/health")
 async def read_health():
-    return {"status": "ok"}
+    return JSONResponse(status_code=status.HTTP_200_OK, content={"status": "UP", "db": "UP"})
+
+@app.get("/health/live")
+async def read_health_live():
+    client = TestClient(app)
+    response = client.get(f"{BACKEND_URL}/health")
+
+    if response.status_code != 200:
+        print("Health check failed: Backend is not responding")
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"status": "DOWN", "db": "DOWN"})
+    else:
+        return JSONResponse(status_code=status.HTTP_200_OK, content={"status": "UP", "db": "UP"})
+
+@app.get("/health/ready")
+async def read_health_ready():
+    if ticketsDb_utils.isDbUp() and userDb_utils.isDbUp():
+        return JSONResponse(status_code=status.HTTP_200_OK, content={"status": "UP", "db": "UP"})
+    else:
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"status": "DOWN", "db": "DOWN"})
 
 @app.get("/signin")
 async def signin():
