@@ -19,8 +19,6 @@ function LicensePlate() {
                 console.log("API response:", response);
                 if (response.status === 200) {
                     window.location.href = "/accessGranted";
-                } else if (response.status === 403) {
-                    alert("Access denied! YOU DO NOT HAVE A VALID PARKING PASS.");
                 } else {
                     alert("An unexpected error occurred. Please try again.");
                 }
@@ -28,6 +26,9 @@ function LicensePlate() {
             .catch(error => {
                 setLoading(false);
                 console.error("Error uploading file:", error);
+                if (error && error.message.includes("Forbidden")) {
+                    alert("Access denied! YOU DO NOT HAVE A VALID PARKING PASS.");
+                }
             });
     } catch (error) {
         setLoading(false);
