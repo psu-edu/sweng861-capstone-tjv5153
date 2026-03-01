@@ -116,7 +116,17 @@ def checkIfUserHasParkingPass(licensePlate : str):
     except sqlite3.Error as e:
         print(f"Failed to check parking pass: {e}")
         return False
-    
+
+def isDbUp():
+    try:
+        conn = sqlite3.connect(USERS_DB_PATH)
+        conn.execute("SELECT 1")
+        conn.close()
+        return True
+    except sqlite3.Error as e:
+        print(f"Users Database connection failed: {e}")
+        return False
+ 
 #Used for testing purposes to print all users in the database
 def print_all_users_database():
     try:
