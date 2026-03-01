@@ -23,9 +23,8 @@ This option was chosen because the Campus Transit project is an internal tool th
 ---
 
 **Running Backend**  
-- Install on dependencies in backend/requirements.txt
-`pip install -r requirements.txt`
 `cd backend`  
+`pip install -r requirements.txt`
 `uvicorn main:app --reload`  
 Backend runs on port 8000  
 http://localhost:8000    
@@ -34,6 +33,7 @@ http://localhost:8000
 
 **Running Frontend**  
 `cd frontend/react-app`  
+`npm install`  
 `npm run dev`  
 Frontend runs on port 5173
 http://localhost:5173  
@@ -41,14 +41,14 @@ http://localhost:5173
 ---
 **Running Tests**  
 Backend:
-`cd backend`    
+`cd backend`  
+`pytest tests/` OR  
 `pytest tests/ --cov=. --cov-report html`  
--s shows prints in the console  
 --cov and --cov-report html generate a coverage report in html
 Open tests\htmlcov\index.html in a browser to view the backend coverage report  
 Frontend:  
 `cd frontend/react-app`  
-`npm run test`  
+`npm run test` OR  
 `npm run test:coverage` for coverage report  
 Open frontend\react-app\coverage\index.html in a browser to view the frontend coverage report
 
