@@ -89,7 +89,7 @@ async def authentication_middleware(request: Request, call_next):
 
     session_id = request.cookies.get("session_id")
     if not session_id:
-        print("unauthorized1")
+        logger.warning(f"Unauthorized access attempt to {request.url.path} from {request.client.host} - No session ID found in cookies")
         return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
             content={"Unauthorized": "Valid access token is required"}
@@ -97,15 +97,15 @@ async def authentication_middleware(request: Request, call_next):
     else:
         is_valid = await validateTokens(session_id, "access_token")
         if not is_valid:
-            print("unauthorized2")
+            logger.warning(f"Unauthorized access attempt to {request.url.path} from {request.client.host} - Invalid session ID")
             return JSONResponse(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 content={"Unauthorized": "Invalid session Id"}
             )
         else:
-            print("Session ID is valid")
+            logger.info(f"Session ID is valid for path {request.url.path} - Extracting user info for downstream use")
             user_info = extractUserInfo(session_id)
-            print(f"User Info from Middleware: {user_info}")
+            #print(f"User Info from Middleware: {user_info}")
 
             #Attach user info to the request object for downstream use
             request.state.user = user_info['name']

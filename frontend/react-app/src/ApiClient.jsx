@@ -26,6 +26,9 @@ const ApiFetch = async (endpoint) => {
     catch (error) 
     {
         console.error("API error:", error);
+        console.log("User is not authenticated. Redirecting to login page...");
+        sessionStorage.setItem("authStatus", false);
+        window.location.href = "/login";
         throw error;
     }
 }
@@ -42,20 +45,23 @@ const ApiPost = async (endpoint, data) => {
         });
         if (!response.ok) 
         {
+            if (response.status === 401 || response.status === 403)
+            {
+                console.log("User is not authenticated. Redirecting to login page...");
+                sessionStorage.setItem("authStatus", false);
+                window.location.href = "/login";
+                return;
+            }
             throw new Error(`API POST request failed: ${response.statusText}`);
-        }
-        if (response.status === 401 || response.status === 403)
-        {
-            console.log("User is not authenticated. Redirecting to login page...");
-            sessionStorage.setItem("authStatus", false);
-            window.location.href = "/login";
-            return;
         }
         return await response;
     } 
     catch (error) 
     {
         console.error("API POST error:", error);
+        console.log("User is not authenticated. Redirecting to login page...");
+        sessionStorage.setItem("authStatus", false);
+        window.location.href = "/login";
         throw error;
     }
 }
@@ -73,20 +79,23 @@ const ApiPostFile = async (endpoint, file) => {
         });
         if (!response.ok) 
         {
+            if (response.status === 401)
+            {
+                console.log("User is not authenticated. Redirecting to login page...");
+                sessionStorage.setItem("authStatus", false);
+                window.location.href = "/login";
+                return;
+            }
             throw new Error(`API POST request failed: ${response.statusText}`);
-        }
-        if (response.status === 401 || response.status === 403)
-        {
-            console.log("User is not authenticated. Redirecting to login page...");
-            sessionStorage.setItem("authStatus", false);
-            window.location.href = "/login";
-            return;
         }
         return await response;
     } 
     catch (error) 
     {
         console.error("API POST error:", error);
+        console.log("User is not authenticated. Redirecting to login page...");
+        sessionStorage.setItem("authStatus", false);
+        window.location.href = "/login";
         throw error;
     }
 }
@@ -103,20 +112,22 @@ const ApiPut = async (endpoint, data) => {
         });
         if (!response.ok) 
         {
+            if (response.status === 401 || response.status === 403)
+            {
+                console.log("User is not authenticated. Redirecting to login page...");
+                sessionStorage.setItem("authStatus", false);
+                window.location.href = "/login";
+                return;
+            }
             throw new Error(`API PUT request failed: ${response.statusText}`);
-        }
-        if (response.status === 401 || response.status === 403)
-        {
-            console.log("User is not authenticated. Redirecting to login page...");
-            sessionStorage.setItem("authStatus", false);
-            window.location.href = "/login";
-            return;
         }
         return await response;
     } 
     catch (error) 
     {
-        console.error("API POST error:", error);
+        console.log("User is not authenticated. Redirecting to login page...");
+        sessionStorage.setItem("authStatus", false);
+        window.location.href = "/login";
         throw error;
     }
 }
@@ -146,7 +157,10 @@ const ApiDelete = async (endpoint, data) => {
     } 
     catch (error) 
     {
-        console.error("API POST error:", error);
+        console.error("API DELETE error:", error);
+        console.log("User is not authenticated. Redirecting to login page...");
+        sessionStorage.setItem("authStatus", false);
+        window.location.href = "/login";
         throw error;
     }
 }
