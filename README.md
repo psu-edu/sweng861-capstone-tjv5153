@@ -23,6 +23,8 @@ This option was chosen because the Campus Transit project is an internal tool th
 ---
 
 **Running Backend**  
+- Install on dependencies in backend/requirements.txt
+`pip install -r requirements.txt`
 `cd backend`  
 `uvicorn main:app --reload`  
 Backend runs on port 8000  
@@ -64,13 +66,16 @@ Frontend:
 ---
 
 **Environment Variables**  
+**Example .env file**  
 OKTA_URL=https://integrator-7714547.okta.com/oauth2/default  
-OKTA_CLIENT_ID=0oazhe55z0YsOjWHn697  
-OKTA_CLIENT_SECRET=opCPfpAe0RCjSuqChiwFtT_XvqBCsGREOtBj-f8eNrHr3HY98yG_h0Fi9nppKjPn  
+OKTA_CLIENT_ID=XXXXXXXXXXXXXXXXXXXXXXXXXXX  
+OKTA_CLIENT_SECRET=XXXXXXXXXXXXXXXXXXXXXXXXXXX  
 BACKEND_URL=http://localhost:8000  
 FRONTEND_URL=http://localhost:5173  
 USERS_DB=../database/users.db  
 TICKETS_DB=../database/tickets.db  
-TEST_TOKEN=eyJraWQiOiJRVWhKU3pTWXBxSlpmRHhKV0liM0I1OHdGMi1EMC1Dby1PSEt6aTZTa1o0IiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULmVTUUM1QjU0RjdHb19mVXJoNHVEUi12SWRzamliM3JIYng1anBWZHc3OGMiLCJpc3MiOiJodHRwczovL2ludGVncmF0b3ItNzcxNDU0Ny5va3RhLmNvbS9vYXV0aDIvZGVmYXVsdCIsImF1ZCI6ImFwaTovL2RlZmF1bHQiLCJpYXQiOjE3NzExMTU0MzYsImV4cCI6MTc3MTExOTAzNiwiY2lkIjoiMG9hemhlNTV6MFlzT2pXSG42OTciLCJ1aWQiOiIwMHV6aDZhOTR4eFBnc0FsYjY5NyIsInNjcCI6WyJvcGVuaWQiXSwiYXV0aF90aW1lIjoxNzcxMTE1NDM0LCJzdWIiOiJ0anY1MTUzQHBzdS5lZHUiLCJsYXN0TmFtZSI6IlZvbGthciIsIm5hbWUiOiJUaW0iLCJlbWFpbCI6InRqdjUxNTNAcHN1LmVkdSJ9.mU34aBKBHjxht9qM9qJY_J4hAPnUUb0Zz8ybvJdo0aVE1T6H7cpa806XyrdSRnyXlpN_4auOv8ZllSzgWWY0BGgQijdlWS-jeOeqh8EjXHk5_jY2qF3aaduZs5oZ7NiBdWd1MNGydhBb2wVDYNg4JjL8qM45I74aMRBPeMq_8gIQb79LYeIaMUeLAhHRjeveWXZynZgvTeGep7UUYKiVwZshQcpZsCUTaegDq8413aSB5cfArZ_N-6pyHKoL4D87tneVBak3zyGN8deoGYBkK6GqZVash8zvtz5NebMYEXCn8XnKCn2csTxpGTwWbMGGyBr1_3VJctUSd6S-xzJirQ  
+TEST_TOKEN=XXXXXXXXXXXXXXXXXXXXXXXXXXX  
 OFFICERS='["Tim Volkar", "John", "Sarah", "Emily", "Michael"]'  
-API_TOKEN=6cffe98f4fbb0df0bc97d2a6206f9f061729d218  
+API_TOKEN=XXXXXXXXXXXXXXXXXXXXXXXXXXX  
+
+---
