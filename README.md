@@ -40,7 +40,7 @@ http://localhost:5173
 
 ---
 **Running Tests**  
-Backend:
+Backend:  
 `cd backend`  
 `pytest tests/` OR  
 `pytest tests/ --cov=. --cov-report html`  
