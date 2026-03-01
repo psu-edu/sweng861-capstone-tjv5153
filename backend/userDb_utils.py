@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import sqlite3
+import pydantic
 
 #configure logging
 date_string = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -18,6 +19,9 @@ if OFFICERS:
 else:
     OFFICERS_LIST = []
 
+class PassSignup(pydantic.BaseModel):
+    name: str
+    licensePlate: str
 
 class User():
     def __init__(self, id, username, email, accessTime, role = 'commuter', parkingPass = False):
@@ -79,6 +83,7 @@ def addParkingPassToUser(licensePlate, name):
         cursor.execute("UPDATE users SET parkingPass = ?, licensePlate = ? WHERE username = ?", (True, licensePlate, name))
         conn.commit()
         conn.close()
+        print(f"Added parking pass for user {name} with license plate {licensePlate}")
         return True
     except sqlite3.Error as e:
         print(f"Failed to add parking pass: {e}")
@@ -100,7 +105,7 @@ def checkIfUserHasParkingPass(licensePlate : str):
     try:
         conn = sqlite3.connect(USERS_DB_PATH)
         cursor = conn.cursor()
-        cursor.execute("SELECT parkingPass FROM users WHERE licensePlate = ?", (licensePlate,))
+        cursor.execute("SELECT parkingPass FROM users WHERE licensePlate = ?", (licensePlate.upper(),))
         result = cursor.fetchone()
         conn.close()
         if result:
@@ -121,6 +126,8 @@ def print_all_users_database():
         rows = cursor.fetchall()
         conn.close()
         for row in rows:
-            print(f"ID: {row[0]}, Username: {row[1]}, Email: {row[2]}, Last Access Time: {row[3]}, Created Time: {row[4]}, Role: {row[5]}")
+            print(f"ID: {row[0]}, Username: {row[1]}, Email: {row[2]}, License Plate: {row[3]}, Last Access Time: {row[4]}, Created Time: {row[5]}, Role: {row[6]}, Parking Pass: {row[7]}")
     except sqlite3.Error as e:
         print(f"Failed to retrieve users: {e}")
+
+print_all_users_database()

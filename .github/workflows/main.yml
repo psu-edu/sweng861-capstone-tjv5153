@@ -2,7 +2,7 @@ on:
   push:
     branches:
       - main
-      - feature/backend
+      - feature/frontend
   pull_request:
     branches:
       - main
@@ -71,3 +71,58 @@ jobs:
         with:
           name: backend-docker-image-${{ github.sha }}.tar
           path: backend/backend_docker_image.tar
+
+  build_test_frontend:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "24.13.0"
+      - name: Install dependencies
+        run: |
+          cd frontend/react-app
+          npm install
+      - name: Build Frontend
+        run: |
+          cd frontend/react-app
+          npm run build
+      - name: Run tests
+        run: |
+          cd frontend/react-app
+          npm run test
+      - name: Frontend Coverage
+        run: |
+          cd frontend/react-app
+          npm run test:coverage
+      - name: Publish Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage-report_${{ github.sha }}.zip
+          path: frontend/react-app/coverage/
+      - name: Security Check
+        run: |
+          cd frontend/react-app
+          npm audit --audit-level=high --json > npm-audit-report.json
+        continue-on-error: true
+      - name: Publish Security Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-security-report_${{ github.sha }}.json
+          path: frontend/react-app/npm-audit-report.json
+
+  build_frontend_docker_image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build Frontend Docker image
+        run: |
+          cd frontend
+          docker build -t frontend .
+          docker save frontend -o frontend_docker_image.tar
+      - name: Publish Frontend Docker Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-docker-image_${{ github.sha }}.tar
+          path: frontend/frontend_docker_image.tar

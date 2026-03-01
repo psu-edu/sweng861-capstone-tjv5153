@@ -41,7 +41,17 @@ def checkIfLicensePlateHasTicket(licensePlate):
         cursor.execute("SELECT * FROM Tickets WHERE licensePlate = ?", (licensePlate,))
         tickets = cursor.fetchall()
         conn.close()
-        return tickets
+        tickets_list = []
+        for ticket in tickets:
+            tickets_list.append(Ticket(
+                ticketNumber=ticket[0],
+                licensePlate=ticket[1],
+                issueDate=ticket[2],
+                violation=ticket[3],
+                fineAmount=ticket[4],
+                officerName=ticket[5]
+            ))
+        return tickets_list
     except sqlite3.Error as e:
         print(f"Failed to check tickets for license plate {licensePlate}: {e}")
         return []
@@ -68,8 +78,25 @@ def removeTicket(ticketNumber):
         conn.commit()
         conn.close()
         print(f"Ticket {ticketNumber} removed successfully")
+        return True
     except sqlite3.Error as e:
         print(f"Failed to remove ticket {ticketNumber}: {e}")
+        return False
+    
+def checkIfIdExists(ticketNumber):
+    try:
+        conn = sqlite3.connect(TICKETS_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM Tickets WHERE ticketNumber = ?", (ticketNumber,))
+        ticket = cursor.fetchone()
+        conn.close()
+        if ticket:
+            return True
+        else:
+            return False
+    except sqlite3.Error as e:
+        print(f"Failed to check if ticket number {ticketNumber} exists: {e}")
+        return False
 
 #Used for testing purposes to print all tickets in the database
 def print_all_tickets_database():
@@ -83,3 +110,5 @@ def print_all_tickets_database():
             print(f"Ticket Number: {row[0]}, License Plate: {row[1]}, Issue Date: {row[2]}, Violation: {row[3]}, Fine Amount: {row[4]}, Officer Name: {row[5]}")
     except sqlite3.Error as e:
         print(f"Failed to retrieve tickets: {e}")
+
+print_all_tickets_database()

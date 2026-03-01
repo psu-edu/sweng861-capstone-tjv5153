@@ -32,15 +32,15 @@ def test_check_if_license_plate_has_ticket(mocker):
     fake_conn = MagicMock()
     mocker.patch('sqlite3.connect', return_value=fake_conn)
 
-    expected_tickets = [("test_ticket", "test_license_plate", "2024-01-01", "test_violation", 100.0, "test_officer")]
-    fake_conn.cursor().fetchall.return_value = expected_tickets
+    db_return = [("test_ticket", "test_license_plate", "2024-01-01", "test_violation", 100.0, "test_officer")]
+    fake_conn.cursor().fetchall.return_value = db_return
 
     tickets = ticketsDb_utils.checkIfLicensePlateHasTicket("test_license_plate")
 
     assert fake_conn.cursor().execute.call_count == 1
     assert fake_conn.cursor().execute.call_args[0][0] == "SELECT * FROM Tickets WHERE licensePlate = ?"
     assert fake_conn.cursor().execute.call_args[0][1] == ("test_license_plate",)
-    assert tickets == expected_tickets
+    assert tickets == [ticketsDb_utils.Ticket(ticketNumber='test_ticket', licensePlate='test_license_plate', issueDate='2024-01-01', violation='test_violation', fineAmount=100.0, officerName='test_officer')]
 
 def test_remove_ticket(mocker):
     fake_conn = MagicMock()

@@ -1,8 +1,9 @@
-# sweng861-capstone-tjv5153  
+# sweng861-capstone-tjv5153
+
 **Tim Volkar**  
 **SWENG 861**  
 **Campus Transit**  
-This project is an application that streamlines campus parking for commuter students. Parking permits can be purchased using this application and enforcement officers can issue tickets. It will also provide access to the campus parking garage using license plates.  
+This project is an application that streamlines campus parking for commuter students. Parking permits can be purchased using this application and enforcement officers can issue tickets. It will also provide access to the campus parking garage using license plates.
 
 ---
 
@@ -25,5 +26,12 @@ This option was chosen because the Campus Transit project is an internal tool th
 `cd backend`  
 `uvicorn main:app --reload`  
 Backend runs on port 8000
+
+---
+
+**Running Frontend**  
+`cd frontend/react-app`  
+`npm run dev`  
+Frontend runs on port 5173
 
 ---
